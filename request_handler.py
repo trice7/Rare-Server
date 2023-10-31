@@ -51,7 +51,14 @@ class HandleRequests(BaseHTTPRequestHandler):
 
     def do_GET(self):
         """Handle Get requests to the server"""
-        pass
+        self._set_headers(200)
+        response = {}
+        
+        (resource, id) = self.parse_url(self.path)
+        
+        ## If statements go here
+        
+        self.wfile.write(json.dumps(response).encode())
 
 
     def do_POST(self):
@@ -71,11 +78,25 @@ class HandleRequests(BaseHTTPRequestHandler):
 
     def do_PUT(self):
         """Handles PUT requests to the server"""
-        pass
+        self._set_headers(204)
+        content_len = int(self.headers.get('content-length' , 0))
+        post_body = self.rfile.read(content_len)
+        post_body = json.loads(post_body)
+        
+        (resource, id) = self.parse_url(self.path)
+        
+        ## If Statements go here
+        
+        self.wfile.write("".encode())
 
     def do_DELETE(self):
         """Handle DELETE Requests"""
-        pass
+        self._set_headers(204)
+        (resource, id) = self.parse_url(self.path)
+        
+        ## if statements go here
+        
+        self.wfile.write("".encode())
 
 
 def main():
