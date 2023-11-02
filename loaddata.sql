@@ -38,8 +38,7 @@ CREATE TABLE "Posts" (
   "publication_date" date,
   "image_url" varchar,
   "content" varchar,
-  "approved" bit,
-  FOREIGN KEY(`user_id`) REFERENCES `Users`(`id`),
+  FOREIGN KEY(`user_id`) REFERENCES `Users`(`id`)
 );
 
 CREATE TABLE "Comments" (
@@ -88,3 +87,5 @@ CREATE TABLE "Categories" (
 INSERT INTO Categories ('label') VALUES ('News');
 INSERT INTO Tags ('label') VALUES ('JavaScript');
 INSERT INTO Reactions ('label', 'image_url') VALUES ('happy', 'https://pngtree.com/so/happy');
+
+INSERT INTO `Posts` VALUES (null, 1, 1, "Post1", "20231102", "www.google.com", "the content")
