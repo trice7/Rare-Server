@@ -20,7 +20,7 @@ def get_all_posts():
             a.publication_date,
             a.image_url,
             a.content
-        FROM post a
+        FROM posts a
         """)
 
         # Initialize an empty list to hold all post representations
@@ -60,7 +60,7 @@ def get_single_post(id):
             a.publication_date,
             a.image_url,
             a.content
-        FROM post a
+        FROM posts a
         WHERE a.id = ?
         """, ( id, ))
 
@@ -114,7 +114,7 @@ def update_post(id, new_post):
         db_cursor = conn.cursor()
 
         db_cursor.execute("""
-        UPDATE post
+        UPDATE posts
             SET
                 user_id = ?,
                 category_id = ?,
