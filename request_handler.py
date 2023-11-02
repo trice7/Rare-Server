@@ -71,6 +71,8 @@ class HandleRequests(BaseHTTPRequestHandler):
                 else:
                     response = get_all_posts()
                     self._set_headers(200)
+        
+        self.wfile.write(json.dumps(response).encode())
 
 
 
