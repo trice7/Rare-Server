@@ -1,4 +1,5 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from urllib.parse import urlparse, parse_qs
 import json
 
 from views.user import create_user, login_user
@@ -51,6 +52,12 @@ class HandleRequests(BaseHTTPRequestHandler):
 
     def do_GET(self):
         """Handle Get requests to the server"""
+        self._set_headers(200)
+        
+        response = {}
+        
+        # Parse URL and store entire tuple in a variable
+        parsed = self.parse_url(self.path)
         pass
 
 
