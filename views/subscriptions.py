@@ -35,7 +35,7 @@ def create_subscription(new_subscription):
             ( follower_id, author_id, created_on )
             
         VALUES
-            ( ?, ?, ?, ?)
+            ( ?, ?, ?)
         """, (new_subscription['follower_id'], new_subscription['author_id'], new_subscription['created_on'], ))
         
         id = db_cursor.lastrowid
