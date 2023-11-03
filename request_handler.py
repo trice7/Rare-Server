@@ -1,7 +1,10 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from urllib.parse import urlparse, parse_qs
 import json
 
 from views.user import create_user, login_user
+from views import get_single_post, get_all_posts, create_post, update_post, delete_post
+from views import get_single_subscription, get_all_subscriptions , delete_subscription, update_subscription, create_subscription
 
 
 class HandleRequests(BaseHTTPRequestHandler):
@@ -51,14 +54,35 @@ class HandleRequests(BaseHTTPRequestHandler):
 
     def do_GET(self):
         """Handle Get requests to the server"""
-        self._set_headers(200)
+        
         response = {}
         
-        (resource, id) = self.parse_url(self.path)
+        # Parse URL and store entire tuple in a variable
+        parsed = self.parse_url()
         
-        ## If statements go here
+        # If the path does not include a query parameter, continue with the original if block
+        if '?' not in self.path:
+            ( resource, id ) = parsed
+            
+            if resource == "posts":
+                if id is not None:
+                    response = get_single_post(id)
+                    self._set_headers(200)
+
+                else:
+                    response = get_all_posts()
+                    self._set_headers(200)
+            
+            if resource == "subscriptions":
+                if id is not None:
+                    response = get_single_subscription(id)
+                    self._set_headers(200)
+                else:
+                    response = get_all_subscriptions()
+                    self._set_headers(200)
         
         self.wfile.write(json.dumps(response).encode())
+
 
 
     def do_POST(self):
@@ -68,36 +92,62 @@ class HandleRequests(BaseHTTPRequestHandler):
         post_body = json.loads(self.rfile.read(content_len))
         response = ''
         resource, _ = self.parse_url()
+        
+        new_post = None
 
         if resource == 'login':
             response = login_user(post_body)
         if resource == 'register':
             response = create_user(post_body)
+        if resource == "posts":
+            new_post = create_post(post_body)
+        if resource == "subscriptions":
+            response = create_subscription(post_body)
+            
+        
 
         self.wfile.write(response.encode())
+        self.wfile.write(json.dumps(new_post).encode())
 
     def do_PUT(self):
         """Handles PUT requests to the server"""
-        self._set_headers(204)
-        content_len = int(self.headers.get('content-length' , 0))
+        content_len = int(self.headers.get('content-length', 0))
         post_body = self.rfile.read(content_len)
         post_body = json.loads(post_body)
-        
-        (resource, id) = self.parse_url(self.path)
-        
-        ## If Statements go here
-        
+
+    # Parse the URL
+        (resource, id) = self.parse_url()
+            # set default value of success
+        success = False
+
+        if resource == "posts":
+            success = update_post(id, post_body)
+        if resource == "subscriptions":
+            success = update_subscription(id, post_body)
+
+    # handle the value of success
+        if success:
+            self._set_headers(204)
+        else:
+            self._set_headers(404)
+
         self.wfile.write("".encode())
+
 
     def do_DELETE(self):
         """Handle DELETE Requests"""
+            # Set a 204 response code
         self._set_headers(204)
-        (resource, id) = self.parse_url(self.path)
-        
-        ## if statements go here
-        
-        self.wfile.write("".encode())
 
+    # Parse the URL
+        (resource, id) = self.parse_url()
+        
+        if resource == "posts":
+            delete_post(id)
+        if resource == "subscriptions":
+            delete_subscription(id)
+
+        self.wfile.write("".encode())
 
 def main():
     """Starts the server on port 8088 using the HandleRequests class

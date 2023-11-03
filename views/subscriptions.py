@@ -13,7 +13,7 @@ def get_all_subscriptions():
             a.follower_id,
             a.author_id,
             a.created_on
-        FROM Subscription a               
+        FROM Subscriptions a               
         """)
         
         subscriptions = []
@@ -31,7 +31,7 @@ def create_subscription(new_subscription):
         db_cursor = conn.cursor()
         
         db_cursor.execute("""
-        INSERT INTO Subscription
+        INSERT INTO Subscriptions
             ( follower_id, author_id, created_on )
             
         VALUES
@@ -47,7 +47,7 @@ def delete_subscription(id):
         db_cursor = conn.cursor()
         
         db_cursor.execute("""
-        DELETE FROM subscription
+        DELETE FROM subscriptions
         WHERE id = ?
         """, (id, ))
         
@@ -55,7 +55,7 @@ def update_subscription(id, new_subscription):
     with sqlite3.connect("./db.sqlite3") as conn:
         db_cursor = conn.cursor()
         db_cursor.execute("""
-        UPDATE Subscription
+        UPDATE Subscriptions
           SET
             follower_id = ?,
             author_id = ?,
@@ -70,8 +70,8 @@ def update_subscription(id, new_subscription):
     else:
         return True
 
-def get_single_subscription():
-    with sqlite3.connect("./kennel.sqlite3") as conn:
+def get_single_subscription(id):
+    with sqlite3.connect("./db.sqlite3") as conn:
         conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()
         db_cursor.execute("""
