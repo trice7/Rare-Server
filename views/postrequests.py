@@ -79,7 +79,7 @@ def create_post(new_post):
         db_cursor = conn.cursor()
 
         db_cursor.execute("""
-        INSERT INTO post
+        INSERT INTO posts
             ( user_id, category_id, title, publication_date, image_url, content )
         VALUES
             ( ?, ?, ?, ?, ?, ?);
@@ -105,7 +105,7 @@ def delete_post(id):
         db_cursor = conn.cursor()
 
         db_cursor.execute("""
-        DELETE FROM post
+        DELETE FROM posts
         WHERE id = ?
         """, (id, ))
         

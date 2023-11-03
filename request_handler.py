@@ -84,9 +84,6 @@ class HandleRequests(BaseHTTPRequestHandler):
         response = ''
         resource, _ = self.parse_url()
         
-        post_body = json.loads(post_body)
-        
-        (resource, id) = self.parse_url(self.path)
         new_post = None
 
         if resource == 'login':
@@ -107,7 +104,7 @@ class HandleRequests(BaseHTTPRequestHandler):
         post_body = json.loads(post_body)
 
     # Parse the URL
-        (resource, id) = self.parse_url(self.path)
+        (resource, id) = self.parse_url()
             # set default value of success
         success = False
 
@@ -131,7 +128,7 @@ class HandleRequests(BaseHTTPRequestHandler):
         self._set_headers(204)
 
     # Parse the URL
-        (resource, id) = self.parse_url(self.path)
+        (resource, id) = self.parse_url()
         
         if resource == "posts":
             delete_post(id)
