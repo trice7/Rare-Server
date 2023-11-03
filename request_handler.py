@@ -4,6 +4,7 @@ import json
 from views.user import create_user, login_user
 
 
+
 class HandleRequests(BaseHTTPRequestHandler):
     """Handles the requests to this server"""
 
