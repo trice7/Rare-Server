@@ -1,13 +1,12 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import urlparse, parse_qs
 import json
-
 from views.user import create_user, login_user
 from views import get_single_post, get_all_posts, create_post, update_post, delete_post
 from views import get_single_subscription, get_all_subscriptions , delete_subscription, update_subscription, create_subscription
+from views import get_single_comment, get_all_comments, create_comment, update_comment, delete_comment
 from views import get_single_category, get_all_category, update_category, create_category, delete_category
 from views import get_all_tags, get_single_tag, update_tag, create_tag, delete_tag
-
 class HandleRequests(BaseHTTPRequestHandler):
     """Handles the requests to this server"""
 
@@ -81,7 +80,13 @@ class HandleRequests(BaseHTTPRequestHandler):
                 else:
                     response = get_all_subscriptions()
                     self._set_headers(200)
-                    
+            if resource == "comments":
+                if id is not None: 
+                    response = get_single_comment(id)
+                    self._set_headers(200)
+                else:
+                    response = get_all_comments()
+                    self._set_headers(200)       
             if resource == "categories":
                 if id is not None:
                     response = get_single_category(id)
@@ -97,7 +102,6 @@ class HandleRequests(BaseHTTPRequestHandler):
                 else:
                     response = get_all_tags()
                     self._set_headers(200)
-        
         self.wfile.write(json.dumps(response).encode())
 
 
@@ -119,12 +123,12 @@ class HandleRequests(BaseHTTPRequestHandler):
             new_post = create_post(post_body)
         if resource == "subscriptions":
             response = create_subscription(post_body)
+        if resource == 'comments':
+            response = create_comment(post_body)
         if resource == "categories":
             response = create_category(post_body)
         if resource == "tags":
             response = create_tag(post_body)
-
-
         self.wfile.write(response.encode())
         self.wfile.write(json.dumps(new_post).encode())
 
@@ -143,11 +147,12 @@ class HandleRequests(BaseHTTPRequestHandler):
             success = update_post(id, post_body)
         if resource == "subscriptions":
             success = update_subscription(id, post_body)
+        if resource == 'comments':
+            success = update_comment(id, post_body)
         if resource == "categories":
             success = update_category(id, post_body)
         if resource == "tags":
             success = update_category(id, post_body)
-
     # handle the value of success
         if success:
             self._set_headers(204)
@@ -169,11 +174,12 @@ class HandleRequests(BaseHTTPRequestHandler):
             delete_post(id)
         if resource == "subscriptions":
             delete_subscription(id)
+        if resource == 'comments':
+            delete_comment(id)
         if resource == "categories":
             delete_category(id)
         if resource == "tags":
             delete_category(id)
-
         self.wfile.write("".encode())
 
 def main():
