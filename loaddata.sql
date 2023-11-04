@@ -96,6 +96,8 @@ INSERT INTO Posts VALUES (null, 1, 1, "Post1", "20231102", "www.google.com", "th
 
 INSERT INTO `PostTags` VALUES (null, 3, 2)
 
+INSERT INTO `PostTags` VALUES (null, 2, 2)
+
 INSERT INTO `Tags` VALUES (null, "economy") 
 
         SELECT

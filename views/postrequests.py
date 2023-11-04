@@ -30,27 +30,39 @@ def get_all_posts():
         """)
 
         # Initialize an empty list to hold all post representations
-        posts = []
-
+        posts = {}
         # Convert rows of data into a Python list
         dataset = db_cursor.fetchall()
 
-        # Iterate list of data returned from database
         for row in dataset:
+            post_id = row['id']
 
-            # Create an post instance from the current row.
-            # Note that the database fields are specified in
-            # exact order of the parameters defined in the
-            # post class above.
-            post = Post(row['id'], row['user_id'], row['category_id'], row['title'],
-                            row['publication_date'], row['image_url'],
-                            row['content'])
-            
+            if post_id not in posts:
+                # Create a post instance from the current row.
+                post = Post(
+                    post_id,
+                    row['user_id'],
+                    row['category_id'],
+                    row['title'],
+                    row['publication_date'],
+                    row['image_url'],
+                    row['content']
+                )
+                post.tags = []
+
+                posts[post_id] = post
+
+            # Create a tag instance for the current row and add it to the post's tags
             tag = Tag(row['tag_id'], row['tag_label'])
-            
-            post.tags = tag.__dict__
+            posts[post_id].tags.append(tag.__dict__)
 
-            posts.append(post.__dict__) # see the notes below for an explanation on this line of code.
+        # Convert the dictionary of post representations to a list
+        post_list = list(posts.values())
+
+        # Convert post and tag objects to dictionaries
+        posts = [post.__dict__ for post in post_list]
+        for post in posts:
+            post['tags'] = [tag for tag in post['tags']]
 
     return posts
   
