@@ -6,6 +6,7 @@ from views.user import create_user, login_user
 from views import get_single_post, get_all_posts, create_post, update_post, delete_post
 from views import get_single_subscription, get_all_subscriptions , delete_subscription, update_subscription, create_subscription
 from views import get_single_category, get_all_category, update_category, create_category, delete_category
+from views import get_all_tags, get_single_tag, update_tag, create_tag, delete_tag
 
 class HandleRequests(BaseHTTPRequestHandler):
     """Handles the requests to this server"""
@@ -88,6 +89,14 @@ class HandleRequests(BaseHTTPRequestHandler):
                 else:
                     response = get_all_category()
                     self._set_headers(200)
+            
+            if resource == "tags":
+                if id is not None:
+                    response = get_single_tag(id)
+                    self._set_headers(200)
+                else:
+                    response = get_all_tags()
+                    self._set_headers(200)
         
         self.wfile.write(json.dumps(response).encode())
 
@@ -112,6 +121,8 @@ class HandleRequests(BaseHTTPRequestHandler):
             response = create_subscription(post_body)
         if resource == "categories":
             response = create_category(post_body)
+        if resource == "tags":
+            response = create_tag(post_body)
 
 
         self.wfile.write(response.encode())
@@ -133,6 +144,8 @@ class HandleRequests(BaseHTTPRequestHandler):
         if resource == "subscriptions":
             success = update_subscription(id, post_body)
         if resource == "categories":
+            success = update_category(id, post_body)
+        if resource == "tags":
             success = update_category(id, post_body)
 
     # handle the value of success
@@ -157,6 +170,8 @@ class HandleRequests(BaseHTTPRequestHandler):
         if resource == "subscriptions":
             delete_subscription(id)
         if resource == "categories":
+            delete_category(id)
+        if resource == "tags":
             delete_category(id)
 
         self.wfile.write("".encode())
