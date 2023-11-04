@@ -86,5 +86,11 @@ CREATE TABLE "Categories" (
 );
 
 INSERT INTO Categories ('label') VALUES ('News');
+INSERT INTO Categories ('label') VALUES ('Butts');
 INSERT INTO Tags ('label') VALUES ('JavaScript');
 INSERT INTO Reactions ('label', 'image_url') VALUES ('happy', 'https://pngtree.com/so/happy');
+
+INSERT INTO Subscriptions ('follower_id', 'author_id', 'created_on') VALUES (1, 2, 20230211)
+
+INSERT INTO Subscriptions ('follower_id', 'author_id', 'created_on') VALUES (3, 1, 20232510)
+INSERT INTO Posts VALUES (null, 1, 1, "Post1", "20231102", "www.google.com", "the content", "false")
