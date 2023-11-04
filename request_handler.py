@@ -4,6 +4,7 @@ import json
 
 from views.user import create_user, login_user
 from views import get_single_post, get_all_posts, create_post, update_post, delete_post
+from views import get_single_subscription, get_all_subscriptions , delete_subscription, update_subscription, create_subscription
 
 
 class HandleRequests(BaseHTTPRequestHandler):
@@ -71,6 +72,14 @@ class HandleRequests(BaseHTTPRequestHandler):
                 else:
                     response = get_all_posts()
                     self._set_headers(200)
+            
+            if resource == "subscriptions":
+                if id is not None:
+                    response = get_single_subscription(id)
+                    self._set_headers(200)
+                else:
+                    response = get_all_subscriptions()
+                    self._set_headers(200)
         
         self.wfile.write(json.dumps(response).encode())
 
@@ -91,7 +100,10 @@ class HandleRequests(BaseHTTPRequestHandler):
         if resource == 'register':
             response = create_user(post_body)
         if resource == "posts":
-            new_post = create_post(post_body) 
+            new_post = create_post(post_body)
+        if resource == "subscriptions":
+            response = create_subscription(post_body)
+            
         
 
         self.wfile.write(response.encode())
@@ -109,9 +121,9 @@ class HandleRequests(BaseHTTPRequestHandler):
         success = False
 
         if resource == "posts":
-        # will return either True or False from `update_animal`
             success = update_post(id, post_body)
-    # rest of the elif's
+        if resource == "subscriptions":
+            success = update_subscription(id, post_body)
 
     # handle the value of success
         if success:
@@ -132,6 +144,8 @@ class HandleRequests(BaseHTTPRequestHandler):
         
         if resource == "posts":
             delete_post(id)
+        if resource == "subscriptions":
+            delete_subscription(id)
 
         self.wfile.write("".encode())
 
