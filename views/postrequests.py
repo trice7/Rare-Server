@@ -1,6 +1,6 @@
 import sqlite3
 import json
-from models import Post, Tag
+from models import Post, Tag, Category
 
 def get_all_posts():
     # Open a connection to the database
@@ -21,8 +21,12 @@ def get_all_posts():
             a.image_url,
             a.content,
             t.id tag_id,
-            t.label tag_label
+            t.label tag_label,
+            c.id category_id,
+            c.label category_label
         FROM posts a
+        JOIN Categories c
+            on c.id = a.category_id
         JOIN PostTags pt 
             on a.id = pt.post_id 
         JOIN Tags t 
@@ -39,21 +43,16 @@ def get_all_posts():
 
             if post_id not in posts:
                 # Create a post instance from the current row.
-                post = Post(
-                    post_id,
-                    row['user_id'],
-                    row['category_id'],
-                    row['title'],
-                    row['publication_date'],
-                    row['image_url'],
-                    row['content']
-                )
+                post = Post(post_id, row['user_id'], row['category_id'], row['title'],
+                            row['publication_date'], row['image_url'], row['content'])
                 post.tags = []
 
                 posts[post_id] = post
 
             # Create a tag instance for the current row and add it to the post's tags
             tag = Tag(row['tag_id'], row['tag_label'])
+            category = Category(row['category_id'], row['category_label'])
+            posts[post_id].category = category.__dict__
             posts[post_id].tags.append(tag.__dict__)
 
         # Convert the dictionary of post representations to a list
