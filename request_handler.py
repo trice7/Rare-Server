@@ -6,6 +6,7 @@ from views import get_single_post, get_all_posts, create_post, update_post, dele
 from views import get_single_subscription, get_all_subscriptions , delete_subscription, update_subscription, create_subscription
 from views import get_single_comment, get_all_comments, create_comment, update_comment, delete_comment
 from views import get_single_category, get_all_category, update_category, create_category, delete_category
+from views import get_all_tags, get_single_tag, update_tag, create_tag, delete_tag
 class HandleRequests(BaseHTTPRequestHandler):
     """Handles the requests to this server"""
 
@@ -93,6 +94,14 @@ class HandleRequests(BaseHTTPRequestHandler):
                 else:
                     response = get_all_category()
                     self._set_headers(200)
+            
+            if resource == "tags":
+                if id is not None:
+                    response = get_single_tag(id)
+                    self._set_headers(200)
+                else:
+                    response = get_all_tags()
+                    self._set_headers(200)
         self.wfile.write(json.dumps(response).encode())
 
 
@@ -118,6 +127,8 @@ class HandleRequests(BaseHTTPRequestHandler):
             response = create_comment(post_body)
         if resource == "categories":
             response = create_category(post_body)
+        if resource == "tags":
+            response = create_tag(post_body)
         self.wfile.write(response.encode())
         self.wfile.write(json.dumps(new_post).encode())
 
@@ -139,6 +150,8 @@ class HandleRequests(BaseHTTPRequestHandler):
         if resource == 'comments':
             success = update_comment(id, post_body)
         if resource == "categories":
+            success = update_category(id, post_body)
+        if resource == "tags":
             success = update_category(id, post_body)
     # handle the value of success
         if success:
@@ -164,6 +177,8 @@ class HandleRequests(BaseHTTPRequestHandler):
         if resource == 'comments':
             delete_comment(id)
         if resource == "categories":
+            delete_category(id)
+        if resource == "tags":
             delete_category(id)
         self.wfile.write("".encode())
 

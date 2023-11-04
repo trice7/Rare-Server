@@ -1,6 +1,6 @@
 import sqlite3
 import json
-from models import Post
+from models import Post, Tag
 
 def get_all_posts():
     # Open a connection to the database
@@ -19,28 +19,50 @@ def get_all_posts():
             a.title,
             a.publication_date,
             a.image_url,
-            a.content
+            a.content,
+            t.id tag_id,
+            t.label tag_label
         FROM posts a
+        JOIN PostTags pt 
+            on a.id = pt.post_id 
+        JOIN Tags t 
+            on pt.tag_id = t.id
         """)
 
         # Initialize an empty list to hold all post representations
-        posts = []
-
+        posts = {}
         # Convert rows of data into a Python list
         dataset = db_cursor.fetchall()
 
-        # Iterate list of data returned from database
         for row in dataset:
+            post_id = row['id']
 
-            # Create an post instance from the current row.
-            # Note that the database fields are specified in
-            # exact order of the parameters defined in the
-            # post class above.
-            post = Post(row['id'], row['user_id'], row['category_id'], row['title'],
-                            row['publication_date'], row['image_url'],
-                            row['content'])
+            if post_id not in posts:
+                # Create a post instance from the current row.
+                post = Post(
+                    post_id,
+                    row['user_id'],
+                    row['category_id'],
+                    row['title'],
+                    row['publication_date'],
+                    row['image_url'],
+                    row['content']
+                )
+                post.tags = []
 
-            posts.append(post.__dict__) # see the notes below for an explanation on this line of code.
+                posts[post_id] = post
+
+            # Create a tag instance for the current row and add it to the post's tags
+            tag = Tag(row['tag_id'], row['tag_label'])
+            posts[post_id].tags.append(tag.__dict__)
+
+        # Convert the dictionary of post representations to a list
+        post_list = list(posts.values())
+
+        # Convert post and tag objects to dictionaries
+        posts = [post.__dict__ for post in post_list]
+        for post in posts:
+            post['tags'] = [tag for tag in post['tags']]
 
     return posts
   
