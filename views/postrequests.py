@@ -1,6 +1,6 @@
 import sqlite3
 import json
-from models import Post
+from models import Post, Tag
 
 def get_all_posts():
     # Open a connection to the database
@@ -19,8 +19,14 @@ def get_all_posts():
             a.title,
             a.publication_date,
             a.image_url,
-            a.content
+            a.content,
+            t.id tag_id,
+            t.label tag_label
         FROM posts a
+        JOIN PostTags pt 
+            on a.id = pt.post_id 
+        JOIN Tags t 
+            on pt.tag_id = t.id
         """)
 
         # Initialize an empty list to hold all post representations
@@ -39,6 +45,10 @@ def get_all_posts():
             post = Post(row['id'], row['user_id'], row['category_id'], row['title'],
                             row['publication_date'], row['image_url'],
                             row['content'])
+            
+            tag = Tag(row['tag_id'], row['tag_label'])
+            
+            post.tags = tag.__dict__
 
             posts.append(post.__dict__) # see the notes below for an explanation on this line of code.
 

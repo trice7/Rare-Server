@@ -89,3 +89,23 @@ INSERT INTO Tags ('label') VALUES ('JavaScript');
 INSERT INTO Reactions ('label', 'image_url') VALUES ('happy', 'https://pngtree.com/so/happy');
 
 INSERT INTO `Posts` VALUES (null, 1, 1, "Post1", "20231102", "www.google.com", "the content")
+
+INSERT INTO `PostTags` VALUES (null, 3, 2)
+
+INSERT INTO `Tags` VALUES (null, "economy") 
+
+        SELECT
+            a.id,
+            a.user_id,
+            a.category_id,
+            a.title,
+            a.publication_date,
+            a.image_url,
+            a.content,
+            t.id tag_id,
+            t.label tag_label
+        FROM posts a
+        JOIN PostTags pt 
+            on a.id = pt.post_id 
+        JOIN Tags t 
+            on pt.tag_id = t.id
