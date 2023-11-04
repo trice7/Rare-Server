@@ -117,3 +117,4 @@ def delete_comment(id):
         DELETE FROM comments
         WHERE id = ?                  
         """, (id,))
+y
