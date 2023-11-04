@@ -1,9 +1,9 @@
 import sqlite3
 import json
-from models import Catagory
+from models import Category
 
-def get_all_catagory():
-    """gets all catagories"""
+def get_all_category():
+    """gets all categories"""
     with sqlite3.connect("./db.sqlite3") as conn:
         conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()
@@ -12,20 +12,20 @@ def get_all_catagory():
         SELECT
             c.id,
             c.label
-        FROM Catagories c
+        FROM Categories c
         """)
 
-        catagories = []
+        categories = []
         dataset = db_cursor.fetchall()
 
         for row in dataset:
-            catagory = Catagory(row['id'], row['label'])
-            catagories.append(catagory.__dict__)
+            category = Category(row['id'], row['label'])
+            categories.append(category.__dict__)
 
-    return catagories
+    return categories
 
-def get_single_catagory(id):
-    """gets single catagory"""
+def get_single_category(id):
+    """gets single category"""
     with sqlite3.connect("./db.sqlite3") as conn:
         conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()
@@ -34,41 +34,42 @@ def get_single_catagory(id):
         SELECT
             c.id,
             c.label
-        FROM Catagories c
+        FROM Categories c
         WHERE c.id = ?
         """, ( id, ))
 
         data = db_cursor.fetchone()
-        catagory = Catagory(data['id'], data['label'])
+        category = Category(data['id'], data['label'])
 
-        return catagory.__dict__
+        return category.__dict__
 
-def create_catagory(new_catagory):
-    """creates new catagory"""
+def create_category(new_category):
+    """creates new category"""
     with sqlite3.connect("./db.sqlite3") as conn:
         db_cursor = conn.cursor()
 
         db_cursor.execute("""
-        INSERT INTO Catagories
+        INSERT INTO Categories
             (label)
         VALUES
-            (?);
-        """, (new_catagory['label'],))
+            (?)
+        """, (new_category['label'], ))
 
         id = db_cursor.lastrowid
-        new_catagory['id'] = id
+        new_category['id'] = id
+    return new_category
 
-def update_catagory(id, new_catagory):
-    """updates catagory"""
+def update_category(id, new_category):
+    """updates category"""
     with sqlite3.connect("./db.sqlite3") as conn:
         db_cursor = conn.cursor()
 
         db_cursor.execute("""
-        UPDATE Catagories
+        UPDATE Categories
             SET
                 label = ?
         WHERE id = ?
-        """, (new_catagory['label'], id, ))
+        """, (new_category['label'], id, ))
 
         rows_affected = db_cursor.rowcount
 
@@ -76,3 +77,13 @@ def update_catagory(id, new_catagory):
         return False
     else:
         return True
+
+def delete_category(id):
+    """deletes categories"""
+    with sqlite3.connect("./db.sqlite3") as conn:
+        db_cursor = conn.cursor()
+
+        db_cursor.execute("""
+        DELETE FROM Categories
+        WHERE id = ?
+        """, (id, ))

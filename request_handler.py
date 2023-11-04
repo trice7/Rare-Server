@@ -5,7 +5,7 @@ import json
 from views.user import create_user, login_user
 from views import get_single_post, get_all_posts, create_post, update_post, delete_post
 from views import get_single_subscription, get_all_subscriptions , delete_subscription, update_subscription, create_subscription
-
+from views import get_single_category, get_all_category, update_category, create_category, delete_category
 
 class HandleRequests(BaseHTTPRequestHandler):
     """Handles the requests to this server"""
@@ -80,9 +80,16 @@ class HandleRequests(BaseHTTPRequestHandler):
                 else:
                     response = get_all_subscriptions()
                     self._set_headers(200)
+                    
+            if resource == "categories":
+                if id is not None:
+                    response = get_single_category(id)
+                    self._set_headers(200)
+                else:
+                    response = get_all_category()
+                    self._set_headers(200)
         
         self.wfile.write(json.dumps(response).encode())
-
 
 
     def do_POST(self):
@@ -103,8 +110,9 @@ class HandleRequests(BaseHTTPRequestHandler):
             new_post = create_post(post_body)
         if resource == "subscriptions":
             response = create_subscription(post_body)
-            
-        
+        if resource == "categories":
+            response = create_category(post_body)
+
 
         self.wfile.write(response.encode())
         self.wfile.write(json.dumps(new_post).encode())
@@ -124,6 +132,8 @@ class HandleRequests(BaseHTTPRequestHandler):
             success = update_post(id, post_body)
         if resource == "subscriptions":
             success = update_subscription(id, post_body)
+        if resource == "categories":
+            success = update_category(id, post_body)
 
     # handle the value of success
         if success:
@@ -146,6 +156,8 @@ class HandleRequests(BaseHTTPRequestHandler):
             delete_post(id)
         if resource == "subscriptions":
             delete_subscription(id)
+        if resource == "categories":
+            delete_category(id)
 
         self.wfile.write("".encode())
 
