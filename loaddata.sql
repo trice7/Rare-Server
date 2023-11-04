@@ -94,6 +94,7 @@ INSERT INTO Subscriptions ('follower_id', 'author_id', 'created_on') VALUES (1, 
 
 INSERT INTO Subscriptions ('follower_id', 'author_id', 'created_on') VALUES (3, 1, 20232510)
 INSERT INTO Posts VALUES (null, 1, 1, "Post1", "20231102", "www.google.com", "the content", "false")
+INSERT INTO Posts VALUES (null, 1, 1, "Post3", "20231102", "www.google.com", "the content")
 
 INSERT INTO `PostTags` VALUES (null, 3, 2)
 

@@ -2,7 +2,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import urlparse, parse_qs
 import json
 from views.user import create_user, login_user
-from views import get_single_post, get_all_posts, create_post, update_post, delete_post
+from views import get_single_post, get_all_posts, create_post, update_post, delete_post, get_all_posts_without_tags
 from views import get_single_subscription, get_all_subscriptions , delete_subscription, update_subscription, create_subscription
 from views import get_single_comment, get_all_comments, create_comment, update_comment, delete_comment
 from views import get_single_category, get_all_category, update_category, create_category, delete_category
@@ -73,6 +73,16 @@ class HandleRequests(BaseHTTPRequestHandler):
                 else:
                     response = get_all_posts()
                     self._set_headers(200)
+            
+            if resource == "testposts":
+                if id is not None:
+                    response = get_single_post(id)
+                    self._set_headers(200)
+                    
+                else:
+                    response = get_all_posts_without_tags()
+                    self._set_headers(200)
+                
             
             if resource == "subscriptions":
                 if id is not None:
