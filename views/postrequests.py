@@ -1,77 +1,16 @@
 import sqlite3
 import json
-from models import Post, Tag, Category
+from models import Post, Tag, Category, Reaction
 
 def get_all_posts():
     # Open a connection to the database
-    with sqlite3.connect("./db.sqlite3") as conn:
+     with sqlite3.connect("./db.sqlite3") as conn:
 
         # Just use these. It's a Black Box.
         conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()
-
-        # Write the SQL query to get the information you want
-        db_cursor.execute("""
-        SELECT
-            a.id,
-            a.user_id,
-            a.category_id,
-            a.title,
-            a.publication_date,
-            a.image_url,
-            a.content,
-            t.id tag_id,
-            t.label tag_label,
-            c.id category_id,
-            c.label category_label
-        FROM posts a
-        JOIN Categories c
-            on c.id = a.category_id
-        JOIN PostTags pt 
-            on a.id = pt.post_id 
-        JOIN Tags t 
-            on pt.tag_id = t.id
-        """)
-
-        # Initialize an empty list to hold all post representations
-        posts = {}
-        # Convert rows of data into a Python list
-        dataset = db_cursor.fetchall()
-
-        for row in dataset:
-            post_id = row['id']
-
-            if post_id not in posts:
-                # Create a post instance from the current row.
-                post = Post(post_id, row['user_id'], row['category_id'], row['title'],
-                            row['publication_date'], row['image_url'], row['content'])
-                post.tags = []
-
-                posts[post_id] = post
-
-            # Create a tag instance for the current row and add it to the post's tags
-            tag = Tag(row['tag_id'], row['tag_label'])
-            category = Category(row['category_id'], row['category_label'])
-            posts[post_id].category = category.__dict__
-            posts[post_id].tags.append(tag.__dict__)
-
-        # Convert the dictionary of post representations to a list
-        post_list = list(posts.values())
-
-        # Convert post and tag objects to dictionaries
-        posts = [post.__dict__ for post in post_list]
-        for post in posts:
-            post['tags'] = [tag for tag in post['tags']]
-
-    return posts
-
-def get_all_posts_without_tags():
-    # Open a connection to the database
-    with sqlite3.connect("./db.sqlite3") as conn:
-
-        # Just use these. It's a Black Box.
-        conn.row_factory = sqlite3.Row
-        db_cursor = conn.cursor()
+        db_tags = conn.cursor()
+        db_reactions = conn.cursor()
 
         # Write the SQL query to get the information you want
         db_cursor.execute("""
@@ -95,22 +34,65 @@ def get_all_posts_without_tags():
         # Iterate list of data returned from database
         for row in dataset:
 
+            db_tags.execute("""
+            SELECT
+                p.id as pid,
+                p.user_id, p.title,
+                pt.id as ptid,
+                pt.post_id,
+                pt.tag_id,
+                t.id,
+                t.label
+            FROM Posts p
+            JOIN PostTags pt
+                ON p.id = pt.post_id
+            JOIN Tags t
+                on pt.tag_id = t.id
+            WHERE p.id = ?
+            
+            """, ( row['id'], ))
+            
+            db_reactions.execute("""
+            SELECT p.id as pid, p.title, pr.id as prid, pr.user_id, pr.reaction_id, pr.post_id, r.id, r.label, r.image_url
+            from Posts p
+            join PostReactions pr
+                on p.id = pr.post_id
+            JOIN Reactions r
+                on pr.reaction_id = r.id
+            WHERE pid = ?                     
+            """, (row['id'] ,))
+            
+            tagsdata = db_tags.fetchall()
+            reactionsdata = db_reactions.fetchall()
             # Create an post instance from the current row.
             # Note that the database fields are specified in
             # exact order of the parameters defined in the
             # post class above.
+            
+            
             post = Post(row['id'], row['user_id'], row['category_id'], row['title'],
                             row['publication_date'], row['image_url'],
                             row['content'])
+            
+            for row in tagsdata:
+                tag = Tag(row['id'], row['label'])
+                post.tags.append(tag.__dict__)
+        
+            for row in reactionsdata:
+                reaction = Reaction(row['id'], row['label'], row['image_url'])
+                reaction_dict = {**reaction.__dict__, 'user_id': row['user_id']}
+                post.reactions.append(reaction_dict)
 
             posts.append(post.__dict__) # see the notes below for an explanation on this line of code.
 
-    return posts
+     return posts
   
 def get_single_post(id):
     with sqlite3.connect("./db.sqlite3") as conn:
         conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()
+        db_tags = conn.cursor()
+        db_reactions = conn.cursor()
 
         # Use a ? parameter to inject a variable's value
         # into the SQL statement.
@@ -126,14 +108,54 @@ def get_single_post(id):
         FROM posts a
         WHERE a.id = ?
         """, ( id, ))
+        
+        db_tags.execute("""
+        SELECT
+            p.id as pid,
+            p.user_id, p.title,
+            pt.id as ptid,
+            pt.post_id,
+            pt.tag_id,
+            t.id,
+            t.label
+        FROM Posts p
+        JOIN PostTags pt
+            ON p.id = pt.post_id
+        JOIN Tags t
+            on pt.tag_id = t.id
+        WHERE p.id = ?
+        
+        """, ( id, ))
+        
+        db_reactions.execute("""
+        SELECT p.id as pid, p.title, pr.id as prid, pr.user_id, pr.reaction_id, pr.post_id, r.id, r.label, r.image_url
+        from Posts p
+        join PostReactions pr
+            on p.id = pr.post_id
+        JOIN Reactions r
+            on pr.reaction_id = r.id
+        WHERE pid = ?                     
+        """, (id ,))
 
         # Load the single result into memory
         data = db_cursor.fetchone()
+        tagsdata = db_tags.fetchall()
+        reactionsdata = db_reactions.fetchall()
 
         # Create an post instance from the current row
         post = Post(data['id'], data['user_id'], data['category_id'], data['title'],
                             data['publication_date'], data['image_url'],
                             data['content'])
+        
+        for row in tagsdata:
+            tag = Tag(row['id'], row['label'])
+            post.tags.append(tag.__dict__)
+        
+        for row in reactionsdata:
+            reaction = Reaction(row['id'], row['label'], row['image_url'])
+            reaction_dict = {**reaction.__dict__, 'user_id': row['user_id']}
+            post.reactions.append(reaction_dict)
+            
 
         return post.__dict__
 
