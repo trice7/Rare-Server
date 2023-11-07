@@ -85,6 +85,8 @@ CREATE TABLE "Categories" (
   "label" varchar
 );
 
+INSERT INTO Users ('first_name', 'last_name', 'email', 'bio', 'username', 'password', 'profile_image_url', 'created_on', 'active') VALUES ('Norbert', 'Jackson', 'norbort@norbort.com', 'they call me norbort', 'norby69', 'nobutts96', 'https://images.squarespace-cdn.com/content/v1/55a2bffae4b037baec79f96e/1468005814958-SV82OV6SAQBZL39JYGOP/NORBANNER.jpg?format=1500w', '10/10/10', 'yes');
+
 INSERT INTO Categories ('label') VALUES ('News');
 INSERT INTO Categories ('label') VALUES ('Butts');
 INSERT INTO Tags ('label') VALUES ('JavaScript');
