@@ -21,8 +21,12 @@ def get_all_posts():
             a.title,
             a.publication_date,
             a.image_url,
-            a.content
+            a.content,
+            c.id categoryid,
+            c.label category_label
         FROM posts a
+        JOIN Categories c
+            on c.id = a.category_id
         """)
 
         # Initialize an empty list to hold all post representations
@@ -74,6 +78,9 @@ def get_all_posts():
                             row['publication_date'], row['image_url'],
                             row['content'])
             
+            category = Category(row['categoryid'], row['category_label'])
+            post.category = category.__dict__
+            
             for row in tagsdata:
                 tag = Tag(row['id'], row['label'])
                 post.tags.append(tag.__dict__)
@@ -82,6 +89,7 @@ def get_all_posts():
                 reaction = Reaction(row['id'], row['label'], row['image_url'])
                 reaction_dict = {**reaction.__dict__, 'user_id': row['user_id']}
                 post.reactions.append(reaction_dict)
+        
 
             posts.append(post.__dict__) # see the notes below for an explanation on this line of code.
 
@@ -104,8 +112,12 @@ def get_single_post(id):
             a.title,
             a.publication_date,
             a.image_url,
-            a.content
+            a.content,
+            c.id categoryid,
+            c.label category_label
         FROM posts a
+        JOIN Categories c
+            on c.id = a.category_id
         WHERE a.id = ?
         """, ( id, ))
         
@@ -146,6 +158,10 @@ def get_single_post(id):
         post = Post(data['id'], data['user_id'], data['category_id'], data['title'],
                             data['publication_date'], data['image_url'],
                             data['content'])
+        
+        category = Category(data['categoryid'], data['category_label'])
+        post.category = category.__dict__
+        
         
         for row in tagsdata:
             tag = Tag(row['id'], row['label'])

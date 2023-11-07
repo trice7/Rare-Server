@@ -5,3 +5,5 @@ from .category import Category
 from .comment import Comment
 from .reaction import Reaction
 from .users import User
+from .posttag import PostTag
+
