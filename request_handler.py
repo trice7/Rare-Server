@@ -8,7 +8,7 @@ from views import get_single_comment, get_all_comments, create_comment, update_c
 from views import get_single_category, get_all_category, update_category, create_category, delete_category
 from views import get_all_tags, get_single_tag, update_tag, create_tag, delete_tag, get_single_post_tag, get_all_post_tags
 from views import get_single_reaction, get_all_reactions
-from views import get_all_users, get_single_user
+from views import get_all_users, get_single_user, get_all_post_reactions, get_single_post_reaction, delete_post_reaction, update_post_reaction
 class HandleRequests(BaseHTTPRequestHandler):
     """Handles the requests to this server"""
 
@@ -118,6 +118,14 @@ class HandleRequests(BaseHTTPRequestHandler):
                     self._set_headers(200)
                 else:
                     response = get_all_reactions()
+                    self._set_headers(200)
+                    
+            if resource == "postreactions":
+                if id is not None:
+                    response = get_single_post_reaction(id)
+                    self._set_headers(200)
+                else:
+                    response = get_all_post_reactions()
                     self._set_headers(200)
                     
             if resource == "users":

@@ -7,3 +7,4 @@ from .reaction import Reaction
 from .users import User
 from .posttag import PostTag
 
+from .post_reaction import Post_Reaction
