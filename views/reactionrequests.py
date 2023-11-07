@@ -34,7 +34,7 @@ def get_all_post_reactions():
           a.user_id,
           a.post_id,
           a.reaction_id
-        FROM postreactions a
+        FROM PostReactions a
         """)
         
         reactions = []
@@ -68,12 +68,14 @@ def get_single_post_reaction(id):
     with sqlite3.connect("./db.sqlite3") as conn:
         conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()
-        db_cursor("""
+        db_cursor.execute("""
         SELECT
           a.id,
           a.user_id,
           a.post_id,
           a.reaction_id
+        FROM PostReactions a
+        WHERE a.id = ?
         """, ( id, ))
         
         data = db_cursor.fetchone()
