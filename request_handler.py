@@ -147,14 +147,14 @@ class HandleRequests(BaseHTTPRequestHandler):
         response = ''
         resource, _ = self.parse_url()
         
-        new_post = None
+        # new_post = None
 
         if resource == 'login':
             response = login_user(post_body)
         if resource == 'register':
             response = create_user(post_body)
         if resource == "posts":
-            new_post = create_post(post_body)
+            response = create_post(post_body)
         if resource == "subscriptions":
             response = create_subscription(post_body)
         if resource == 'comments':
@@ -166,7 +166,7 @@ class HandleRequests(BaseHTTPRequestHandler):
         if resource == "posttags":
             response = create_tag(post_body)
         self.wfile.write(response.encode())
-        self.wfile.write(json.dumps(new_post).encode())
+        # self.wfile.write(json.dumps(new_post).encode())
 
     def do_PUT(self):
         """Handles PUT requests to the server"""
@@ -219,7 +219,7 @@ class HandleRequests(BaseHTTPRequestHandler):
         if resource == "tags":
             delete_category(id)
         if resource == "posttags":
-            delete_category(id)
+            delete_post_tag(id)
         self.wfile.write("".encode())
 
 def main():
