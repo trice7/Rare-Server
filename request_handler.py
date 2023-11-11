@@ -130,14 +130,14 @@ class HandleRequests(BaseHTTPRequestHandler):
         response = ''
         resource, _ = self.parse_url()
         
-        # new_post = None
+        new_post = None
 
         if resource == 'login':
             response = login_user(post_body)
         if resource == 'register':
             response = create_user(post_body)
         if resource == "posts":
-            response = create_post(post_body)
+            new_post = create_post(post_body)
         if resource == "subscriptions":
             response = create_subscription(post_body)
         if resource == 'comments':
@@ -150,6 +150,10 @@ class HandleRequests(BaseHTTPRequestHandler):
             response = create_tag(post_body)
         self.wfile.write(response.encode())
         # self.wfile.write(json.dumps(new_post).encode())
+        if new_post is not None:
+            self.wfile.write(json.dumps(new_post).encode())
+        else:
+            self.wfile.write(response.encode())
 
     def do_PUT(self):
         """Handles PUT requests to the server"""
