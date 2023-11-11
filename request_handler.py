@@ -8,20 +8,26 @@ from views import get_single_comment, get_all_comments, create_comment, update_c
 from views import get_single_category, get_all_category, update_category, create_category, delete_category
 from views import get_all_tags, get_single_tag, update_tag, create_tag, delete_tag, get_single_post_tag, get_all_post_tags
 from views import get_single_reaction, get_all_reactions
-from views import get_all_users, get_single_user, get_all_post_reactions, get_single_post_reaction, delete_post_reaction, update_post_reaction
+from views import get_all_users, get_single_user, get_all_post_reactions, get_single_post_reaction, delete_post_reaction, update_post_reaction, get_all_users_posts
 class HandleRequests(BaseHTTPRequestHandler):
     """Handles the requests to this server"""
 
-    def parse_url(self):
+    def parse_url(self, path):
         """Parse the url into the resource and id"""
         path_params = self.path.split('/')
         resource = path_params[1]
+        parsed_url = urlparse(path)
         if '?' in resource:
             param = resource.split('?')[1]
             resource = resource.split('?')[0]
             pair = param.split('=')
             key = pair[0]
             value = pair[1]
+            
+            if parsed_url.query:
+                query = parse_qs(parsed_url.query)
+                return (resource, query)
+
             return (resource, key, value)
         else:
             id = None
@@ -60,7 +66,7 @@ class HandleRequests(BaseHTTPRequestHandler):
         response = {}
         
         # Parse URL and store entire tuple in a variable
-        parsed = self.parse_url()
+        parsed = self.parse_url(self.path)
         
         # If the path does not include a query parameter, continue with the original if block
         if '?' not in self.path:
@@ -135,6 +141,13 @@ class HandleRequests(BaseHTTPRequestHandler):
                 else:
                     response = get_all_users()
                     self._set_headers(200)
+        else: # There is a ? in the path, run the query param functions
+            (resource, query) = parsed
+            # see if the query dictionary has an email key
+            if query.get('user_id') and resource == 'posts':
+                response = get_all_users_posts(query['user_id'][0])
+                self._set_headers(200)
+            
                     
         self.wfile.write(json.dumps(response).encode())
 
