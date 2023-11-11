@@ -158,7 +158,7 @@ class HandleRequests(BaseHTTPRequestHandler):
         content_len = int(self.headers.get('content-length', 0))
         post_body = json.loads(self.rfile.read(content_len))
         response = ''
-        resource, _ = self.parse_url()
+        resource, _ = self.parse_url(self.path)
         
         new_post = None
 
@@ -192,7 +192,7 @@ class HandleRequests(BaseHTTPRequestHandler):
         post_body = json.loads(post_body)
 
     # Parse the URL
-        (resource, id) = self.parse_url()
+        (resource, id) = self.parse_url(self.path)
             # set default value of success
         success = False
 
@@ -223,7 +223,7 @@ class HandleRequests(BaseHTTPRequestHandler):
         self._set_headers(204)
 
     # Parse the URL
-        (resource, id) = self.parse_url()
+        (resource, id) = self.parse_url(self.path)
         
         if resource == "posts":
             delete_post(id)
