@@ -165,7 +165,7 @@ class HandleRequests(BaseHTTPRequestHandler):
             response = create_tag(post_body)
         if resource == "posttags":
             response = create_tag(post_body)
-        self.wfile.write(response.encode())
+        # self.wfile.write(response.encode())
         # self.wfile.write(json.dumps(new_post).encode())
         if new_post is not None:
             self.wfile.write(json.dumps(new_post).encode())
