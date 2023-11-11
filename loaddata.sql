@@ -123,3 +123,19 @@ INSERT INTO `Tags` VALUES (null, "economy");
             on a.id = pt.post_id 
         JOIN Tags t 
             on pt.tag_id = t.id
+
+
+        SELECT
+            a.id,
+            a.user_id,
+            a.category_id,
+            a.title,
+            a.publication_date,
+            a.image_url,
+            a.content,
+            c.id categoryid,
+            c.label category_label
+        FROM posts a
+        JOIN Categories c
+            on c.id = a.category_id
+        WHERE a.user_id = 1
