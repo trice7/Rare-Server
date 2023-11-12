@@ -108,6 +108,13 @@ INSERT INTO `PostTags` VALUES (null, 2, 1);
 
 INSERT INTO `Tags` VALUES (null, "economy");
 
+INSErT INTO Comments VALUES(NULL, 1, 1, 'Comment 1');
+INSErT INTO Comments VALUES(NULL, 1, 1, 'Comment 2');
+INSErT INTO Comments VALUES(NULL, 1, 1, 'Comment 3');
+INSErT INTO Comments VALUES(NULL, 1, 1, 'Comment 4');
+INSErT INTO Comments VALUES(NULL, 1, 1, 'Comment 5');
+INSErT INTO Comments VALUES(NULL, 1, 1, 'Comment 6');
+
         SELECT
             a.id,
             a.user_id,
