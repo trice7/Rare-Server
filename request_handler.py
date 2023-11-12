@@ -6,7 +6,7 @@ from views import get_single_post, get_all_posts, create_post, update_post, dele
 from views import get_single_subscription, get_all_subscriptions , delete_subscription, update_subscription, create_subscription
 from views import get_single_comment, get_all_comments, create_comment, update_comment, delete_comment
 from views import get_single_category, get_all_category, update_category, create_category, delete_category
-from views import get_all_tags, get_single_tag, update_tag, create_tag, delete_tag, get_single_post_tag, get_all_post_tags
+from views import get_all_tags, get_single_tag, update_tag, create_tag, delete_tag, get_single_post_tag, get_all_post_tags, create_post_tag
 from views import get_single_reaction, get_all_reactions
 from views import get_all_users, get_single_user, get_all_post_reactions, get_single_post_reaction, delete_post_reaction, update_post_reaction, get_all_users_posts
 class HandleRequests(BaseHTTPRequestHandler):
@@ -177,7 +177,7 @@ class HandleRequests(BaseHTTPRequestHandler):
         if resource == "tags":
             response = create_tag(post_body)
         if resource == "posttags":
-            response = create_tag(post_body)
+            response = create_post_tag(post_body)
         # self.wfile.write(response.encode())
         # self.wfile.write(json.dumps(new_post).encode())
         if new_post is not None:
