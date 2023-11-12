@@ -1,6 +1,6 @@
 import sqlite3
 import json
-from models import Post, Tag, Category, Reaction
+from models import Post, Tag, Category, Reaction, Comment
 
 def get_all_posts():
     # Open a connection to the database
@@ -195,6 +195,7 @@ def get_single_post(id):
         db_cursor = conn.cursor()
         db_tags = conn.cursor()
         db_reactions = conn.cursor()
+        db_comments = conn.cursor()
 
         # Use a ? parameter to inject a variable's value
         # into the SQL statement.
@@ -242,11 +243,22 @@ def get_single_post(id):
             on pr.reaction_id = r.id
         WHERE pid = ?                     
         """, (id ,))
+        
+        db_comments.execute("""
+        SELECT p.id AS pid, p.user_id, p.title, c.id, c.author_id, c.post_id, c.content
+        FROM Posts p
+        JOIN Comments c
+            ON pid = c.post_id
+        WHERE pid = ?
+        ORDER BY c.id
+        """, (id, ))
 
         # Load the single result into memory
         data = db_cursor.fetchone()
         tagsdata = db_tags.fetchall()
         reactionsdata = db_reactions.fetchall()
+        commentsdata = db_comments.fetchall()
+        
 
         # Create an post instance from the current row
         post = Post(data['id'], data['user_id'], data['category_id'], data['title'],
@@ -265,6 +277,11 @@ def get_single_post(id):
             reaction = Reaction(row['id'], row['label'], row['image_url'])
             reaction_dict = {**reaction.__dict__, 'user_id': row['user_id']}
             post.reactions.append(reaction_dict)
+            
+        for row in commentsdata:
+            comment = Comment(row['id'], row['author_id'], row['post_id'], row['content'])
+            post.comments.append(comment.__dict__)
+            
             
 
         return post.__dict__

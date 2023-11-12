@@ -10,3 +10,4 @@ class Post():
         self.content = content
         self.tags = []
         self.reactions = []
+        self.comments = []
